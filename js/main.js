@@ -30,3 +30,8 @@ function step(){
   canvas.fillStyle = "rgba(255,255,255,"+ opts.sparkLife +")";
   canvas.fillRect(0,0,w,h);
 }
+
+window.addEventListener("resize", function(){
+  w = canvasBody.width = window.innerWidth;
+  h = canvasBody.height = window.innerHeight;
+});
