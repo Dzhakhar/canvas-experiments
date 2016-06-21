@@ -6,25 +6,38 @@ var opts = {
     spawnOpacity: 1, //Sparks will spawn at this opacity
 
     //must be RGBA. alpha stands for opacity, usually 1
-    color: "rgba(39, 173, 96, alpha)" //The color of sparks.
+    color: "hsl(hue, 100%, 50%)" //The color of sparks.
   },
 
   canvasBody = document.getElementById("canvas"),
   canvas = canvasBody.getContext("2d"),
   w = canvasBody.width = window.innerWidth,
-  h = canvasBody.height = window.innerHeight;
+  h = canvasBody.height = window.innerHeight,
+
+  tick = 0,
+
+  currentHue = 0;
 
 function anim() {
   setTimeout(function() {
     window.requestAnimationFrame(anim)
   }, 1000 / 30 ) //Setting the FPS by dividing the one second by <frames>
   step();
+
+  ++tick;
+  if(isNaturalNumber(tick/5)){
+    currentHue++;
+    console.log("change");
+  };
+  if(currentHue == 356){
+    currentHue = 0;
+  }
 }
 
 anim() //Calling the animation function
 
 function step() {
-  var fillColor = opts.color.replace("alpha", opts.spawnOpacity);
+  var fillColor = opts.color.replace("hue", currentHue);
   canvas.fillStyle = fillColor;
   for (var i = 0; i < Math.round(opts.count); i++) {
     var random = Math.random() * opts.sizeRandom;
@@ -37,4 +50,11 @@ function step() {
 window.addEventListener("resize", function(){ //Just in case someone resizes the window
   w = canvasBody.width = window.innerWidth;
   h = canvasBody.height = window.innerHeight;
-})
+});
+
+function isNaturalNumber(n) {
+    n = n.toString(); // force the value incase it is not
+    var n1 = Math.abs(n),
+        n2 = parseInt(n, 10);
+    return !isNaN(n1) && n2 === n1 && n1.toString() === n;
+}
