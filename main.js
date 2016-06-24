@@ -5,17 +5,19 @@ var canvasBody = document.getElementById("canvas"),
     h = canvasBody.height = window.innerHeight,
 
     opts = {
-      amount: 80,
+      amount: 75,
 
       len: 200,
-      size: 10,
+      size: 14,
 
-      baseTime: 100,
-      addedTime: 10,
+      baseTime: 35,
+      addedTime: 5,
 
-      color: "rgba(255,255,255,alpha)",
+      color: "hsl(hue,100%,50%)",
       opacity: 1,
-      bgColor: "#8F1D21",
+      bgColor: "rgba(255,255,255, alpha)",
+      repaintAlpha: 0.05,
+      angles: 3,
 
       cx: w/2,
       cy: h/2,
@@ -23,23 +25,30 @@ var canvasBody = document.getElementById("canvas"),
 
     tick = 0,
     steam = [],
-    baseRad = Math.PI * 2 / 6;
+    currentHue = 0,
+    circ = Math.PI * 2,
+    baseRad = circ / opts.angles;
 
 function loop(){
   window.requestAnimationFrame(loop);
 
   ++tick;
 
-  canvas.fillStyle = opts.bgColor;
+  canvas.fillStyle = opts.bgColor.replace("alpha", opts.repaintAlpha);
   canvas.fillRect(0,0,w,h);
-  canvas.fillStyle = opts.color.replace("alpha", opts.opacity)
 
-  if(opts.amount!==0){
+  for(var i = 0; i < opts.amount; i++){
     steam.push( new Arom );
-    steam.map(function (arom){ arom.reset(); });
-    opts.amount--;
-    console.log(steam);
+    opts.amount -= 1;
   }
+
+  // if(!(tick%1)){
+  //   if(currentHue === 356){
+  //     currentHue = 0;
+  //   } else {
+  //     currentHue++;
+  //   }
+  // }
 
   steam.map( function( arom ){ arom.step();});
 }
@@ -50,9 +59,8 @@ function Arom(){
 }
 
 Arom.prototype.reset = function(){
-
-  this.currentX = 0;
-  this.currentY = 0;
+  this.startX = opts.cx;
+  this.startY = opts.cy;
 
   this.x = 0;
   this.y = 0;
@@ -62,26 +70,27 @@ Arom.prototype.reset = function(){
 
   this.rad = 0;
   this.cumulativeTime = 0;
+  this.goReset = 0;
 
   this.color = opts.color.replace("aplha", opts.opacity);
-
   this.beginPhase();
 };
-
 Arom.prototype.beginPhase = function(){
+
   this.x += this.addedX;
   this.y += this.addedY;
 
   this.time = 0;
-  this.targetTime = ( opts.baseTime + opts.addedTime * Math.random()) |0;
+  this.targetTime = ( opts.baseTime + opts.addedTime) |0;
 
-  this.rad += baseRad + (Math.random() * 10);
+  this.rad += baseRad * (Math.random() > .5 ? 1 : -1);
   this.addedX = Math.cos( this.rad );
   this.addedY = Math.sin( this.rad );
 
-  console.log(this.currentX > w)
+  if ( this.currentX > w - opts.size/2 || this.currentX < 0 - opts.size/2 || this.currentY > h - opts.size/2 || this.currentY < 0 + opts.size/2){
+    this.goReset += 1;
+  };
 }
-
 Arom.prototype.step = function(){
 
   ++this.time;
@@ -90,18 +99,34 @@ Arom.prototype.step = function(){
   if( this.time >= this.targetTime ){
     this.beginPhase();
   };
+  if ( this.goReset == 1){
+    this.reset();
+  }
+
 
   var prop = this.time / this.targetTime,
-      x = this.addedX * prop,
-      y = this.addedY * prop;
+      timingFunction = Math.sin( prop * Math.PI/2 ),
+      // timingFunction = prop,
+      x = this.addedX * timingFunction,
+      y = this.addedY * timingFunction;
 
-  canvas.fillStyle = opts.color.replace("aplha", opts.opacity);
+  canvas.fillStyle = opts.color.replace( "hue", currentHue += 0.05);
+  // canvas.fillRect(this.startX + (this.x + x) * opts.len, this.startY + (this.y + y) * opts.len, opts.size, opts.size)
   canvas.beginPath();
-  canvas.arc( opts.cx + (this.x + x) * opts.len, opts.cy + (this.y + y) * opts.len, opts.size, 0, Math.PI * 2 / (Math.random()));
+  canvas.arc( this.startX + (this.x + x) * opts.len, this.startY + (this.y + y) * opts.len, opts.size, 0, Math.PI * 2 / (Math.random()));
   canvas.fill();
-  console.log()
-  this.currentX = opts.cx + (this.x + x) * opts.len;
-  this.currentY = opts.cy + (this.y + y) * opts.len;
+  this.currentX = this.startX + (this.x + x) * opts.len;
+  this.currentY = this.startY + (this.y + y) * opts.len;
 }
 
 loop();
+
+window.addEventListener("resize", function(){
+  w = canvasBody.width = window.innerWidth;
+  h = canvasBody.height = window.innerHeight;
+  opts.cy = h/2;
+  opts.cx = w/2;
+
+  steam.map( function (arom){ arom.reset()});
+
+});
