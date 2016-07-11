@@ -39,16 +39,16 @@ var canvasBody = document.getElementById("canvas"),
 function initArt(){
   for(var i = 0; i < picture.length; i++){
     for(var f = 0; f < picture[i].length; f++){
-             if (picture[i].charAt(f) == "-"){
+      if(picture[i].charAt(f) == "-"){
         newRect(f, i, color.transparent)
-      } else if (picture[i].charAt(f) == "r"){
+      } else if (picture[i].charAt(f) == "+") {
+        newRect(f, i, color.black)
+      } else if (picture[i].charAt(f) == "r") {
         newRect(f, i, color.red)
       } else if (picture[i].charAt(f) == "h") {
         newRect(f, i, color.brown)
       } else if (picture[i].charAt(f) == "s") {
         newRect(f, i, color.skin)
-      } else if (picture[i].charAt(f) == "+") {
-        newRect(f, i, color.black)
       } else if (picture[i].charAt(f) == "b") {
         newRect(f, i, color.blue)
       } else if (picture[i].charAt(f) == "y") {
@@ -60,10 +60,24 @@ function initArt(){
   }
 }
 
-function newRect(col, row, color){
-  canvas.fillStyle = color;
-  canvas.fillRect(opts.pixelSize*col, opts.pixelSize*row, opts.pixelSize, opts.pixelSize);
-  console.log(col, row, color)
+function getMaxLength(array) {
+  var allLengths = [];
+  for( var i = 0; i < array.length; i++ ) {
+    allLengths.push(array[i].length)
+  }
+  return Math.max.apply(null, allLengths);
 }
 
-initArt();
+function newRect(col, row, color) {
+  canvas.fillStyle = color;
+  canvas.fillRect(col*opts.pixelSize, row*opts.pixelSize, opts.pixelSize, opts.pixelSize);
+  console.log(col, row)
+}
+
+function init(){
+  w = canvasBody.width = getMaxLength(picture) * opts.pixelSize;
+  h = canvasBody.height = picture.length * opts.pixelSize;
+  initArt()
+}
+
+init()
