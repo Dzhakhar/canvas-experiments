@@ -1,34 +1,33 @@
-var canvasBody = document.getElementById("canvas"), //Just selecting the canvas. EZ
-    canvas = canvasBody.getContext("2d"), // Gettings the context of the canvasBody
+var canvasBody = document.getElementById("canvas"),
+    canvas = canvasBody.getContext("2d"),
 
-    w = canvasBody.width = window.innerWidth, // Setting the canvas width, and also, setting the W variable for the window width.
-    h = canvasBody.height = window.innerHeight, // Same as W but for height.
+    w = canvasBody.width = window.innerWidth,
+    h = canvasBody.height = window.innerHeight,
 
-    // Options that you can change. Just try not to touch other ones, but only this ones.
     opts = {
-      bulbSize: 60, //Size of the bulb
-      bulbLightColor: "#fcfcfc", //Buld light color
-      bgc: "rgba(66,124,245,alpha)", // Color of the background
-      bgcRedrawOpacity: 0.05, //Redraw opacity, makes the bulb last longer
+      bulbSize: 60,
+      bulbLightColor: "#fcfcfc",
+      bgc: "rgba(66,124,245,alpha)",
+      bgcRedrawOpacity: 0.05,
 
-      blinkChance: 0.3
+      blinkChance: 0.5
     },
 
     tick = 0,
-    bulbs = [], // The array that will store the objects of each Bulb
-    baseRad = Math.PI * 2, // The default radian. Just to make circle a circle =)
+    bulbs = [],
+    baseRad = Math.PI * 2,
 
-    hAmount = Math.floor(window.innerWidth / opts.bulbSize), // horizontal Amount
-    vAmount = Math.floor(window.innerHeight / opts.bulbSize); // vertical Amount
+    hAmount = Math.floor(w / opts.bulbSize),
+    vAmount = Math.floor(h / opts.bulbSize);
 
-//The repetative function that will call itself, and redraw the canvas every 1000/60 seconds =)
+
 function loop(){
   window.requestAnimationFrame(loop);
 
   ++tick;
 
   canvas.fillStyle = opts.bgc.replace("alpha", opts.bgcRedrawOpacity);
-  canvas.fillRect(0,0,w,h); // Redrawing the canvas.
+  canvas.fillRect(0,0,w,h);
 
   if(Math.random() < opts.blinkChance){
     var randomV = Math.floor(Math.random() * vAmount),
@@ -36,32 +35,31 @@ function loop(){
 
     bulbs[randomV][randomH].spark();
   }
+};
 
-}
-
-function initStuff(){ //The function that will fill out the bulbs radian, and will build the bulb structure.
-
+function initStuff(){
+  console.log(vAmount, hAmount);
   for(var i = 0; i < vAmount; i++){
     var lineData = [];
     for( var f = 0; f < hAmount; f++){
       lineData.push( new Bulb() );
-      console.log(lineData);
     }
     bulbs.push(lineData);
   }
-  for( var d = 0; d < vAmount; d++){
+  for( var b = 0; b < vAmount; b++){
     for( var g = 0; g < hAmount; g++){
-      bulbs[d][g].reset(g, d);
+      bulbs[b][g].reset(g, b);
     }
   }
 
-  loop();
-}
+  loop()
+};
 
 function Bulb(){
 
-  this.reset();
-}
+
+};
+
 Bulb.prototype.reset = function (xPos, yPos) {
   this.radius = opts.bulbSize/2;
   this.color = opts.bulbLightColor;
@@ -69,7 +67,8 @@ Bulb.prototype.reset = function (xPos, yPos) {
   this.x = xPos * opts.bulbSize + this.radius;
   this.y = yPos * opts.bulbSize + this.radius;
 };
-Bulb.prototype.spark = function (arg) {
+
+Bulb.prototype.spark = function (){
   canvas.fillStyle = this.color;
   canvas.beginPath();
   canvas.arc( this.x, this.y, this.radius, 0, baseRad);
