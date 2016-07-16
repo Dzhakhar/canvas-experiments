@@ -9,13 +9,13 @@ var canvasBody = document.getElementById("canvas"),
     },
 
     color = {
-      black: "black",
-      yellow: "yellow",
-      blue: "blue",
-      red: "red",
-      brown: "#84401a",
-      skin: "#ffbd71",
-      transparent: "rgba(0,0,0,0)"
+      "+": "black",
+      y: "yellow",
+      b: "blue",
+      r: "red",
+      h: "#84401a",
+      s: "#ffbd71",
+      "-": "rgba(0,0,0,0)"
     },
 
     picture = [
@@ -39,23 +39,7 @@ var canvasBody = document.getElementById("canvas"),
 function initArt(){
   for(var i = 0; i < picture.length; i++){
     for(var f = 0; f < picture[i].length; f++){
-      if(picture[i].charAt(f) == "-"){
-        newRect(f, i, color.transparent)
-      } else if (picture[i].charAt(f) == "+") {
-        newRect(f, i, color.black)
-      } else if (picture[i].charAt(f) == "r") {
-        newRect(f, i, color.red)
-      } else if (picture[i].charAt(f) == "h") {
-        newRect(f, i, color.brown)
-      } else if (picture[i].charAt(f) == "s") {
-        newRect(f, i, color.skin)
-      } else if (picture[i].charAt(f) == "b") {
-        newRect(f, i, color.blue)
-      } else if (picture[i].charAt(f) == "y") {
-        newRect(f, i, color.yellow)
-      } else {
-        newRect(f, i, color.transparent)
-      }
+      newRect(f, i, color[picture[i][f]])
     }
   }
 }
